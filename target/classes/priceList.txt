@@ -1,0 +1,5 @@
+1,Milk,20,5
+5,Bread,10,0
+18,IceCream,12,0
+10,Whiskey,200,-
+9,Fish,100,0
