@@ -1,3 +1,4 @@
+import com.mtest.aaa.App;
 import com.mtest.aaa.OrderCalculate;
 import org.junit.Assert;
 import org.junit.Test;
@@ -71,6 +72,17 @@ public class AppTest {
         OrderCalculate orcalc =new OrderCalculate();
         String[] s =new String[]{"5-2", "1-2", "card-15"};
         orcalc.valid(s);
+        Assert.assertEquals(2, orcalc.parse(s));
+    }
+    @Test
+    public void calculate1() {
+        OrderCalculate orcalc =new OrderCalculate();
+        String[] s =new String[]{"5-2", "1-6"};
+        orcalc.valid(s);
+        orcalc.loadPriceList();
+        orcalc.parse(s);
+        orcalc.fillingLines();
+        orcalc.result();
         Assert.assertEquals(2, orcalc.parse(s));
     }
 }

@@ -16,18 +16,20 @@ public class OrderCalculate {
     public Integer bonus;
     public List<PosInCheck> lines = new ArrayList<PosInCheck>();
     public Map<Integer, Product> priceList = new HashMap<>();
+    public float sumCheck=0;
+    public float discountCheck=0;
 
-    public Integer findCard(int cardNumber){
-        File priceListFile = new File("src/main/resources", "bonusCardBase.txt");
+    public Integer findCard(int cardNumber) {
+        File priceListFile = new File("d:/temp", "bonusCardBase.txt");
         try (BufferedReader in = new BufferedReader(new FileReader(priceListFile));) {
             String line;
             String divider = "-";
             String[] buff = new String[2];
-            int i=1;
+            int i = 1;
             while ((line = in.readLine()) != null) {
                 try {
                     buff = line.split(divider, 2);
-                    if (cardNumber==Integer.parseInt(buff[0])){
+                    if (cardNumber == Integer.parseInt(buff[0])) {
                         return Integer.parseInt(buff[1]);
                     }
 
@@ -66,8 +68,8 @@ public class OrderCalculate {
                 buff = ops[n - 1].split("-", 2);
                 cardNumber = Integer.parseInt(buff[1]);
                 n = n - 1;
-                bonus=findCard(cardNumber);
-                if (bonus==null){
+                bonus = findCard(cardNumber);
+                if (bonus == null) {
                     message = "This card number is not base";
                     return false;
                 }
@@ -94,7 +96,7 @@ public class OrderCalculate {
     }
 
     public int loadPriceList() {
-        File priceListFile = new File("src/main/resources", "priceList.txt");
+        File priceListFile = new File("d:/temp", "priceList.txt");
         try (BufferedReader in = new BufferedReader(new FileReader(priceListFile));) {
             String line;
             String divider = ",";
@@ -119,7 +121,7 @@ public class OrderCalculate {
                 }
                 i++;
             }
-            return i-1;
+            return i - 1;
 
 
         } catch (IOException e) {
@@ -145,18 +147,35 @@ public class OrderCalculate {
         return lines.size();
     }
 
-    public int fillingLines(){
-        int n =lines.size();
+    public int fillingLines() {
+        int n = lines.size();
         Product tempProduct = new Product();
-        for (int i=0;i<n;i++){
-            tempProduct=priceList.get(lines.get(i).getId());
-            lines.get(i).name=tempProduct.name;
-            lines.get(i).price=tempProduct.price;
-            lines.get(i).discount=tempProduct.discount;
-            lines.get(i).calculateLine();
+        if (bonus == null) {
+            bonus = 0;
+        }
+
+        for (int i = 0; i < n; i++) {
+            tempProduct = priceList.get(lines.get(i).getId());
+            lines.get(i).name = tempProduct.name;
+            lines.get(i).price = tempProduct.price;
+            lines.get(i).discountPercent = tempProduct.discount;
+            sumCheck=sumCheck+lines.get(i).calculateLine(bonus);
+            discountCheck=discountCheck+lines.get(i).discount;
+
         }
         return 0;
     }
 
+    public String result(){
+        for (int i=0;i<lines.size();i++){
+            System.out.print(lines.get(i).getAmount()+" "+lines.get(i).name+" ");
+            System.out.println(lines.get(i).price+" "+lines.get(i).sumLine+" ");
+            if (lines.get(i).discount>0.001){
+                System.out.println(lines.get(i).bonusLine);
+
+            }
+        }
+        return "";
+    }
 
 }

@@ -10,6 +10,8 @@ public class App {
                 oneCheck.loadPriceList();
                 oneCheck.parse(args);
                 oneCheck.fillingLines();
+                oneCheck.result();
+
 
             }
 
