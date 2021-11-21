@@ -147,7 +147,7 @@ public class OrderCalculate {
         return lines.size();
     }
 
-    public int fillingLines() {
+    public float fillingLines() {
         int n = lines.size();
         Product tempProduct = new Product();
         if (bonus == null) {
@@ -163,18 +163,27 @@ public class OrderCalculate {
             discountCheck=discountCheck+lines.get(i).discount;
 
         }
-        return 0;
+        return sumCheck;
     }
 
     public String result(){
         for (int i=0;i<lines.size();i++){
-            System.out.print(lines.get(i).getAmount()+" "+lines.get(i).name+" ");
-            System.out.println(lines.get(i).price+" "+lines.get(i).sumLine+" ");
+            System.out.printf("%-3d  %-10s  %-3d ", i+1,lines.get(i).name,lines.get(i).getAmount());
+            System.out.printf("%7.2f   %9.2f \n",lines.get(i).price,lines.get(i).sumLine);
             if (lines.get(i).discount>0.001){
                 System.out.println(lines.get(i).bonusLine);
 
             }
         }
+        if (discountCheck>0.001){
+            System.out.printf("\nСheck amount                %12.2f",sumCheck);
+            System.out.printf("\nTotal discount              %12.2f",discountCheck);
+            System.out.printf("\nTOTAL PAYABLE               %12.2f",(sumCheck - discountCheck));
+
+        }else  System.out.printf("\nTOTAL PAYABLE               %12.2f",(sumCheck - discountCheck));
+
+
+
         return "";
     }
 

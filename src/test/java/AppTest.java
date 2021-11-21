@@ -77,12 +77,34 @@ public class AppTest {
     @Test
     public void calculate1() {
         OrderCalculate orcalc =new OrderCalculate();
-        String[] s =new String[]{"5-2", "1-6"};
+        String[] s =new String[]{"5-2","1-3","10-1","card-12"};
         orcalc.valid(s);
         orcalc.loadPriceList();
         orcalc.parse(s);
-        orcalc.fillingLines();
+        Assert.assertEquals(280, orcalc.fillingLines(),0.001);
         orcalc.result();
-        Assert.assertEquals(2, orcalc.parse(s));
+
+    }
+    @Test
+    public void calculate2() {
+        OrderCalculate orcalc =new OrderCalculate();
+        String[] s =new String[]{"5-2","1-6","10-1"};
+        orcalc.valid(s);
+        orcalc.loadPriceList();
+        orcalc.parse(s);
+        Assert.assertEquals(340, orcalc.fillingLines(),0.001);
+        orcalc.result();
+
+    }
+    @Test
+    public void calculate3() {
+        OrderCalculate orcalc =new OrderCalculate();
+        String[] s =new String[]{"5-2","1-2","10-1"};
+        orcalc.valid(s);
+        orcalc.loadPriceList();
+        orcalc.parse(s);
+        Assert.assertEquals(260, orcalc.fillingLines(),0.001);
+        orcalc.result();
+
     }
 }
