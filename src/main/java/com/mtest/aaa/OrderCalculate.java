@@ -1,64 +1,26 @@
 package com.mtest.aaa;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class OrderCalculate {
-    public String message;
+    public String validMessage;
     public Integer cardNumber = null;
     public Boolean isCard = false;
     public Integer bonus;
-    public List<PosInCheck> lines = new ArrayList<PosInCheck>();
+    public List<PosInCheck> linesOfCheck = new ArrayList<PosInCheck>();
     public Map<Integer, Product> priceList = new HashMap<>();
-    public float sumCheck=0;
-    public float discountCheck=0;
-
-    public Integer findCard(int cardNumber) {
-        File priceListFile = new File("d:/temp", "bonusCardBase.txt");
-        try (BufferedReader in = new BufferedReader(new FileReader(priceListFile));) {
-            String line;
-            String divider = "-";
-            String[] buff = new String[2];
-            int i = 1;
-            while ((line = in.readLine()) != null) {
-                try {
-                    buff = line.split(divider, 2);
-                    if (cardNumber == Integer.parseInt(buff[0])) {
-                        return Integer.parseInt(buff[1]);
-                    }
-
-
-                } catch (RuntimeException e) {
-                    System.out.println("Not correct data in bonusCardBase line number " + i);
-                    e.printStackTrace();
-
-                }
-                i++;
-            }
-
-        } catch (IOException e) {
-            System.out.println("File for load not found");
-            e.printStackTrace();
-            return null;
-        }
-
-
-        return null;
-    }
+    public float sumCheck = 0;
+    public float discountCheck = 0;
 
 
     public boolean valid(String[] ops) {
-
         int n = ops.length;
-
         if (n == 0) {
-            message = "No data, please correct!";
+            validMessage = "No data, please correct!";
             return false;
         }
         if (ops[n - 1].matches("card.+")) {
@@ -68,69 +30,32 @@ public class OrderCalculate {
                 buff = ops[n - 1].split("-", 2);
                 cardNumber = Integer.parseInt(buff[1]);
                 n = n - 1;
-                bonus = findCard(cardNumber);
+                bonus = WorkWithFile.findCard(new File("d:/temp", "bonusCardBase.txt"), cardNumber);
                 if (bonus == null) {
-                    message = "This card number is not base";
-                    return false;
+                    validMessage = "This card number is not base. You haven't bonus";
+                    return true;
                 }
 
             } catch (NumberFormatException e) {
 
-                message = "Not correct card number";
+                validMessage = "Not correct card number";
                 e.printStackTrace();
                 return false;
             }
         }
         if ((n == 0) & (isCard)) {
-            message = "Data is not correct, you give only card!";
+            validMessage = "Data is not correct, you give only card!";
             return false;
 
         }
         for (int i = 0; i < n; i++) {
             if (!ops[i].matches("[0-9]+-[0-9]+")) {
-                message = "Data is not correct!";
+                validMessage = "Data is not correct! \nChange product on " + (i + 1) + " position";
                 return false;
             }
         }
+        validMessage = "Initial data matches necessary form";
         return true;
-    }
-
-    public int loadPriceList() {
-        File priceListFile = new File("d:/temp", "priceList.txt");
-        try (BufferedReader in = new BufferedReader(new FileReader(priceListFile));) {
-            String line;
-            String divider = ",";
-            int i = 1;
-
-            String[] buff = new String[4];
-
-            while ((line = in.readLine()) != null) {
-                try {
-                    buff = line.split(divider, 4);
-                    if (buff[3].equals("-")) {
-                        priceList.put(Integer.parseInt(buff[0]), new Product(buff[1], Float.parseFloat(buff[2]), null));
-                    } else {
-                        priceList.put(Integer.parseInt(buff[0]), new Product(buff[1], Float.parseFloat(buff[2]), Integer.parseInt(buff[3])));
-                    }
-
-
-                } catch (RuntimeException e) {
-                    System.out.println("Not correct data in priceList file Line number " + i);
-                    e.printStackTrace();
-
-                }
-                i++;
-            }
-            return i - 1;
-
-
-        } catch (IOException e) {
-            System.out.println("File for load not found");
-            e.printStackTrace();
-            return 0;
-        }
-
-
     }
 
     public int parse(String[] ops) {
@@ -141,47 +66,62 @@ public class OrderCalculate {
         String[] buff = new String[2];
         for (int i = 0; i < n; i++) {
             buff = ops[i].split("-", 2);
-            lines.add(new PosInCheck(Integer.parseInt(buff[0]), Integer.parseInt(buff[1])));
+            linesOfCheck.add(new PosInCheck(Integer.parseInt(buff[0]), Integer.parseInt(buff[1])));
 
         }
-        return lines.size();
+        return linesOfCheck.size();
     }
 
     public float fillingLines() {
-        int n = lines.size();
+        int n = linesOfCheck.size();
         Product tempProduct = new Product();
-        if (bonus == null) {
-            bonus = 0;
-        }
-
         for (int i = 0; i < n; i++) {
-            tempProduct = priceList.get(lines.get(i).getId());
-            lines.get(i).name = tempProduct.name;
-            lines.get(i).price = tempProduct.price;
-            lines.get(i).discountPercent = tempProduct.discount;
-            sumCheck=sumCheck+lines.get(i).calculateLine(bonus);
-            discountCheck=discountCheck+lines.get(i).discount;
+            tempProduct = priceList.get(linesOfCheck.get(i).getId());
+            if (tempProduct != null) {
+                linesOfCheck.get(i).name = tempProduct.name;
+                linesOfCheck.get(i).price = tempProduct.price;
+                linesOfCheck.get(i).discountPromoLine = tempProduct.discPromo;
+                if (bonus==null){
+                sumCheck = sumCheck + linesOfCheck.get(i).calculateLine(0);}
+                else  sumCheck = sumCheck + linesOfCheck.get(i).calculateLine(bonus);
+                discountCheck = discountCheck + linesOfCheck.get(i).discount;
+            } else
+                linesOfCheck.get(i).bonusLine = "Product with code " + linesOfCheck.get(i).getId() + " is not in price list!";
 
         }
         return sumCheck;
     }
 
-    public String result(){
-        for (int i=0;i<lines.size();i++){
-            System.out.printf("%-3d  %-10s  %-3d ", i+1,lines.get(i).name,lines.get(i).getAmount());
-            System.out.printf("%7.2f   %9.2f \n",lines.get(i).price,lines.get(i).sumLine);
-            if (lines.get(i).discount>0.001){
-                System.out.println(lines.get(i).bonusLine);
+    public String result() {
+        boolean flag=true;
+        System.out.println(PosInCheck.headCheck());
+        for (int i = 0; i < linesOfCheck.size(); i++) {
+            if (linesOfCheck.get(i).name!=null) {
+                System.out.printf("%-3d  %-10s  %-3d ", i + 1, linesOfCheck.get(i).name, linesOfCheck.get(i).getAmount());
+                System.out.printf("%7.2f   %9.2f \n", linesOfCheck.get(i).price, linesOfCheck.get(i).sumLine);
+                if (linesOfCheck.get(i).discount > 0.001) {
+                    System.out.println(linesOfCheck.get(i).bonusLine);
 
-            }
+                }
+            } else {flag = false; System.out.println(linesOfCheck.get(i).bonusLine);}
         }
-        if (discountCheck>0.001){
-            System.out.printf("\nСheck amount                %12.2f",sumCheck);
-            System.out.printf("\nTotal discount              %12.2f",discountCheck);
-            System.out.printf("\nTOTAL PAYABLE               %12.2f",(sumCheck - discountCheck));
+        if (sumCheck > 0.0001) {
+            if (discountCheck > 0.001) {
+                System.out.printf("\nСheck amount                %12.2f", sumCheck);
+                System.out.printf("\nTotal discount              %12.2f", discountCheck);
+                System.out.printf("\nTOTAL PAYABLE               %12.2f", (sumCheck - discountCheck));
 
-        }else  System.out.printf("\nTOTAL PAYABLE               %12.2f",(sumCheck - discountCheck));
-
+            } else System.out.printf("\nTOTAL PAYABLE               %12.2f", (sumCheck - discountCheck));
+            if (!flag){
+                   System.out.printf("\nWARRING!!! not all position is calculate ", (sumCheck - discountCheck));}
+        } else {
+            System.out.println("Sorry we can't make you check.\n" +
+                    "Any of you products is not in our price list ");
+        }
+        if ((isCard)&(bonus==null)){
+            System.out.println("\nWARRING!!! Sorry we can't find you card.\n" +
+                    "This card number is not base. You haven't bonus");
+        }
 
 
         return "";

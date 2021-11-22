@@ -1,44 +1,71 @@
-import com.mtest.aaa.App;
+import com.mtest.aaa.WorkWithFile;
 import com.mtest.aaa.OrderCalculate;
+import com.mtest.aaa.Product;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.io.File;
+
+import java.util.HashMap;
 
 public class AppTest {
 
 
     @Test
     public void testNoElement() {
-        Assert.assertEquals(false, new OrderCalculate().valid(new String[]{}));
+        OrderCalculate orderCalculate =new OrderCalculate();
+        String[] s =new String[]{"5-2", "1-2", "card-15"};
+        Assert.assertEquals(true, orderCalculate.valid(s));
+        System.out.println(orderCalculate.validMessage);
     }
     @Test
     public void testOneElementNoCorr() {
-        Assert.assertEquals(false, new OrderCalculate().valid(new String[]{"5--2"}));
+        OrderCalculate orderCalculate =new OrderCalculate();
+        String[] s =new String[]{"1-2","5--2"};
+        Assert.assertEquals(false, orderCalculate.valid(s));
+        System.out.println(orderCalculate.validMessage);
 
 
     }
     @Test
     public void testOneElement() {
-        Assert.assertEquals(true, new OrderCalculate().valid(new String[]{"15-02"}));
+
+        OrderCalculate orderCalculate =new OrderCalculate();
+        String[] s =new String[]{"15-02"};
+        Assert.assertEquals(true, orderCalculate.valid(s));
+        System.out.println(orderCalculate.validMessage);
 
 
     }
     @Test
     public void testOneElementWithCardNoCorr() {
-        Assert.assertEquals(false, new OrderCalculate().valid(new String[]{"5-2", "card-145+"}));
+        OrderCalculate orderCalculate =new OrderCalculate();
+        String[] s =new String[]{"5-2","10-1","card-145+"};
+        Assert.assertEquals(false, orderCalculate.valid(s));
+        System.out.println(orderCalculate.validMessage);
+
+
 
 
     }
 
     @Test
-    public void testOneElementWithCard() {
-        Assert.assertEquals(true, new OrderCalculate().valid(new String[]{"5-2", "card-145"}));
+    public void testWithNotInBaseCard() {
+        OrderCalculate orderCalculate =new OrderCalculate();
+        String[] s =new String[]{"5-2","1-2", "card-1"};
+        Assert.assertEquals(true, orderCalculate.valid(s));
+        System.out.println(orderCalculate.validMessage);
+
 
 
     }
 
     @Test
     public void testOnlyCard() {
-        Assert.assertEquals(false, new OrderCalculate().valid(new String[]{"card-145"}));
+        OrderCalculate orderCalculate =new OrderCalculate();
+        String[] s =new String[]{"card-145"};
+        Assert.assertEquals(false, orderCalculate.valid(s));
+        System.out.println(orderCalculate.validMessage);
 
 
     }
@@ -46,7 +73,10 @@ public class AppTest {
 
     @Test
     public void testTwoElement() {
-        Assert.assertEquals(true, new OrderCalculate().valid(new String[]{"5-2", "2-1"}));
+        OrderCalculate orderCalculate =new OrderCalculate();
+        String[] s =new String[]{"5-2","2-1"};
+        Assert.assertEquals(true, orderCalculate.valid(s));
+        System.out.println(orderCalculate.validMessage);
 
 
     }
@@ -54,32 +84,39 @@ public class AppTest {
 
     @Test
     public void testTheeElementWithCard() {
-        Assert.assertEquals(true, new OrderCalculate().valid(new String[]{"5-2","12-5","123-12","card-145"}));
-
-
+        OrderCalculate orderCalculate =new OrderCalculate();
+        String[] s =new String[]{"5-2","12-5","123-12","card-145"};
+        Assert.assertEquals(true, orderCalculate.valid(s));
+        System.out.println(orderCalculate.validMessage);
     }
 
+
     @Test
-    public void testThreeElement() {
-        Assert.assertEquals(false, new OrderCalculate().valid(new String[]{"5-2", "1-2", "2k-15"}));
+    public void NoFoundFile() {
+        WorkWithFile workWithFile=new WorkWithFile();
+        Assert.assertEquals(false, workWithFile.loadPriceList(new File("d:/temp", "price6List.txt"),new HashMap<Integer, Product>()));
+        System.out.println(workWithFile.validFileMessage);
     }
     @Test
-    public void readWithOutCard() {
-        Assert.assertEquals(5, new OrderCalculate().loadPriceList());
+    public void readFromFileWhithMistake() {
+        WorkWithFile workWithFile=new WorkWithFile();
+        Assert.assertEquals(true, workWithFile.loadPriceList(new File("d:/temp", "priceList.txt"),new HashMap<Integer, Product>()));
+        System.out.println(workWithFile.validFileMessage);
     }
     @Test
     public void readAndParseWithCard() {
-        OrderCalculate orcalc =new OrderCalculate();
+        OrderCalculate orderCalculate =new OrderCalculate();
         String[] s =new String[]{"5-2", "1-2", "card-15"};
-        orcalc.valid(s);
-        Assert.assertEquals(2, orcalc.parse(s));
+        orderCalculate.valid(s);
+        Assert.assertEquals(2, orderCalculate.parse(s));
     }
     @Test
     public void calculate1() {
         OrderCalculate orcalc =new OrderCalculate();
-        String[] s =new String[]{"5-2","1-3","10-1","card-12"};
+        WorkWithFile workWithFile=new WorkWithFile();
+        String[] s =new String[]{"5-2","1-3","10-1","card-1"};
         orcalc.valid(s);
-        orcalc.loadPriceList();
+        workWithFile.loadPriceList(new File("d:/temp", "priceList.txt"),orcalc.priceList);
         orcalc.parse(s);
         Assert.assertEquals(280, orcalc.fillingLines(),0.001);
         orcalc.result();
@@ -88,9 +125,10 @@ public class AppTest {
     @Test
     public void calculate2() {
         OrderCalculate orcalc =new OrderCalculate();
+        WorkWithFile workWithFile=new WorkWithFile();
         String[] s =new String[]{"5-2","1-6","10-1"};
         orcalc.valid(s);
-        orcalc.loadPriceList();
+        workWithFile.loadPriceList(new File("d:/temp", "priceList.txt"),orcalc.priceList);
         orcalc.parse(s);
         Assert.assertEquals(340, orcalc.fillingLines(),0.001);
         orcalc.result();
@@ -98,12 +136,49 @@ public class AppTest {
     }
     @Test
     public void calculate3() {
+        WorkWithFile workWithFile=new WorkWithFile();
         OrderCalculate orcalc =new OrderCalculate();
         String[] s =new String[]{"5-2","1-2","10-1"};
         orcalc.valid(s);
-        orcalc.loadPriceList();
+        workWithFile.loadPriceList(new File("d:/temp", "priceList.txt"),orcalc.priceList);
         orcalc.parse(s);
         Assert.assertEquals(260, orcalc.fillingLines(),0.001);
+        orcalc.result();
+
+    }
+    @Test
+    public void calculate4() {
+        WorkWithFile workWithFile=new WorkWithFile();
+        OrderCalculate orcalc =new OrderCalculate();
+        String[] s =new String[]{"5-2","7-2","10-1"};
+        orcalc.valid(s);
+        workWithFile.loadPriceList(new File("d:/temp", "priceList.txt"),orcalc.priceList);
+        orcalc.parse(s);
+        Assert.assertEquals(220, orcalc.fillingLines(),0.001);
+        orcalc.result();
+
+    }
+    @Test
+    public void calculate5() {
+        WorkWithFile workWithFile=new WorkWithFile();
+        OrderCalculate orcalc =new OrderCalculate();
+        String[] s =new String[]{"8-2","7-2","card-12"};
+        orcalc.valid(s);
+        workWithFile.loadPriceList(new File("d:/temp", "priceList.txt"),orcalc.priceList);
+        orcalc.parse(s);
+        Assert.assertEquals(0, orcalc.fillingLines(),0.001);
+        orcalc.result();
+
+    }
+    @Test
+    public void calculate6() {
+        WorkWithFile workWithFile=new WorkWithFile();
+        OrderCalculate orcalc =new OrderCalculate();
+        String[] s =new String[]{"5-2","9-2","12-1","1-6","10-1","card-12"};
+        orcalc.valid(s);
+        workWithFile.loadPriceList(new File("d:/temp", "priceList.txt"),orcalc.priceList);
+        orcalc.parse(s);
+        Assert.assertEquals(620, orcalc.fillingLines(),0.001);
         orcalc.result();
 
     }

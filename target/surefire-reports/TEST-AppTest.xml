@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="11" failures="0" name="AppTest" time="0.011" errors="0" skipped="0">
+<testsuite tests="17" failures="0" name="AppTest" time="0.082" errors="0" skipped="0">
   <properties>
     <property name="idea.version" value="2021.2.1"/>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
@@ -64,15 +64,21 @@
     <property name="sun.desktop" value="windows"/>
     <property name="sun.cpu.isalist" value="amd64"/>
   </properties>
-  <testcase classname="AppTest" name="testOnlyCard" time="0.003"/>
+  <testcase classname="AppTest" name="testOnlyCard" time="0.006"/>
+  <testcase classname="AppTest" name="calculate1" time="0.041"/>
+  <testcase classname="AppTest" name="calculate2" time="0.007"/>
+  <testcase classname="AppTest" name="calculate3" time="0.004"/>
+  <testcase classname="AppTest" name="calculate4" time="0.004"/>
+  <testcase classname="AppTest" name="calculate5" time="0.002"/>
+  <testcase classname="AppTest" name="calculate6" time="0.007"/>
   <testcase classname="AppTest" name="testOneElementWithCardNoCorr" time="0.002"/>
-  <testcase classname="AppTest" name="readWithOutCard" time="0.003"/>
+  <testcase classname="AppTest" name="NoFoundFile" time="0.002"/>
   <testcase classname="AppTest" name="testNoElement" time="0"/>
   <testcase classname="AppTest" name="testTheeElementWithCard" time="0.001"/>
-  <testcase classname="AppTest" name="testOneElementWithCard" time="0.001"/>
+  <testcase classname="AppTest" name="readFromFileWhithMistake" time="0"/>
   <testcase classname="AppTest" name="readAndParseWithCard" time="0.001"/>
-  <testcase classname="AppTest" name="testOneElementNoCorr" time="0"/>
+  <testcase classname="AppTest" name="testOneElementNoCorr" time="0.005"/>
+  <testcase classname="AppTest" name="testWithNotInBaseCard" time="0"/>
   <testcase classname="AppTest" name="testOneElement" time="0"/>
-  <testcase classname="AppTest" name="testThreeElement" time="0"/>
   <testcase classname="AppTest" name="testTwoElement" time="0"/>
 </testsuite>

@@ -1,13 +1,16 @@
 package com.mtest.aaa;
 
+import java.io.File;
+
 public class App {
     public static void main(String[] args) {
         OrderCalculate oneCheck = new OrderCalculate();
+        WorkWithFile workWithFile=new WorkWithFile();
         try {
             if (!oneCheck.valid(args)){
-                System.out.println(oneCheck.message);
+                System.out.println(oneCheck.validMessage);
             } else {
-                oneCheck.loadPriceList();
+                workWithFile.loadPriceList(new File("d:/temp", "priceList.txt"),oneCheck.priceList);
                 oneCheck.parse(args);
                 oneCheck.fillingLines();
                 oneCheck.result();

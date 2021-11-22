@@ -1,4 +1,7 @@
 com\mtest\aaa\OrderCalculate.class
 com\mtest\aaa\App.class
+com\mtest\aaa\Cashier.class
 com\mtest\aaa\Product.class
 com\mtest\aaa\PosInCheck.class
+com\mtest\aaa\Shop.class
+com\mtest\aaa\WorkWithFile.class
