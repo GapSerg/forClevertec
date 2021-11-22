@@ -1,16 +1,15 @@
 package com.mtest.aaa;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+import java.io.*;
 import java.util.Map;
 
 public class WorkWithFile {
     public String validFileMessage = "";
 
-    public boolean loadPriceList(File priceListFile, Map<Integer, Product> priceList) {
+    public boolean loadPriceList(String path, Map<Integer, Product> priceList) {
+        InputStream inStr = WorkWithFile.class.getResourceAsStream(path);
         boolean flag = true;
-        try (BufferedReader in = new BufferedReader(new FileReader(priceListFile));) {
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(inStr));) {
             String line;
             String divider = ",";
             int i = 1;
@@ -35,13 +34,13 @@ public class WorkWithFile {
                 i++;
             }
             if (flag == true) {
-                validFileMessage = "Data in priceListFile \"" + priceListFile.getName() + "\" is correct";
+                validFileMessage = "Data in priceListFile \"" + path + "\" is correct";
             }
             return flag;
 
 
         } catch (Exception e) {
-            this.validFileMessage = "File \"" + priceListFile.getName() + "\" for load not found";
+            this.validFileMessage = "File \"" + path + "\" for load not found";
             e.printStackTrace();
             return false;
         }

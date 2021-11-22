@@ -57,13 +57,13 @@ public class PosInCheck {
     public static String headCheck(){
         StringBuilder head = new StringBuilder();
         Shop shop = new Shop();
-        head.append("           Your check for payment            \n");
-        head.append(String.format("           %15s   N-%-2d  \n",shop.name,shop.number));
+        head.append("\n           Your check for payment            \n");
+        head.append(String.format("           %15s   N%-2d  \n",shop.name,shop.number));
         head.append(String.format("           %20s     \n\n",shop.adress));
         String date = new SimpleDateFormat("dd/MM/yyy").format(Calendar.getInstance().getTime());
         String time = new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime());
         head.append(String.format("You cashier             Date: %8s\n",date));
-        head.append(String.format("%-11s               Time: %8s\n",shop.cashiers.get(0).name,time));
+        head.append(String.format("%-11s             Time:   %8s\n",shop.cashiers.get(0).name,time));
         head.append("N    Product   Q-ty    Price        Tot.");
 
         return head.toString();

@@ -94,13 +94,13 @@ public class AppTest {
     @Test
     public void NoFoundFile() {
         WorkWithFile workWithFile=new WorkWithFile();
-        Assert.assertEquals(false, workWithFile.loadPriceList(new File("d:/temp", "price6List.txt"),new HashMap<Integer, Product>()));
+        Assert.assertEquals(false, workWithFile.loadPriceList("/price6List.txt",new HashMap<Integer, Product>()));
         System.out.println(workWithFile.validFileMessage);
     }
     @Test
     public void readFromFileWhithMistake() {
         WorkWithFile workWithFile=new WorkWithFile();
-        Assert.assertEquals(true, workWithFile.loadPriceList(new File("d:/temp", "priceList.txt"),new HashMap<Integer, Product>()));
+        Assert.assertEquals(true, workWithFile.loadPriceList("/priceList.txt",new HashMap<Integer, Product>()));
         System.out.println(workWithFile.validFileMessage);
     }
     @Test
@@ -116,7 +116,7 @@ public class AppTest {
         WorkWithFile workWithFile=new WorkWithFile();
         String[] s =new String[]{"5-2","1-3","10-1","card-1"};
         orcalc.valid(s);
-        workWithFile.loadPriceList(new File("d:/temp", "priceList.txt"),orcalc.priceList);
+        workWithFile.loadPriceList("/priceList.txt",orcalc.priceList);
         orcalc.parse(s);
         Assert.assertEquals(280, orcalc.fillingLines(),0.001);
         orcalc.result();
@@ -128,7 +128,7 @@ public class AppTest {
         WorkWithFile workWithFile=new WorkWithFile();
         String[] s =new String[]{"5-2","1-6","10-1"};
         orcalc.valid(s);
-        workWithFile.loadPriceList(new File("d:/temp", "priceList.txt"),orcalc.priceList);
+        workWithFile.loadPriceList("/priceList.txt",orcalc.priceList);
         orcalc.parse(s);
         Assert.assertEquals(340, orcalc.fillingLines(),0.001);
         orcalc.result();
@@ -140,7 +140,7 @@ public class AppTest {
         OrderCalculate orcalc =new OrderCalculate();
         String[] s =new String[]{"5-2","1-2","10-1"};
         orcalc.valid(s);
-        workWithFile.loadPriceList(new File("d:/temp", "priceList.txt"),orcalc.priceList);
+        workWithFile.loadPriceList("/priceList.txt",orcalc.priceList);
         orcalc.parse(s);
         Assert.assertEquals(260, orcalc.fillingLines(),0.001);
         orcalc.result();
@@ -152,7 +152,7 @@ public class AppTest {
         OrderCalculate orcalc =new OrderCalculate();
         String[] s =new String[]{"5-2","7-2","10-1"};
         orcalc.valid(s);
-        workWithFile.loadPriceList(new File("d:/temp", "priceList.txt"),orcalc.priceList);
+        workWithFile.loadPriceList("/priceList.txt",orcalc.priceList);
         orcalc.parse(s);
         Assert.assertEquals(220, orcalc.fillingLines(),0.001);
         orcalc.result();
@@ -164,7 +164,7 @@ public class AppTest {
         OrderCalculate orcalc =new OrderCalculate();
         String[] s =new String[]{"8-2","7-2","card-12"};
         orcalc.valid(s);
-        workWithFile.loadPriceList(new File("d:/temp", "priceList.txt"),orcalc.priceList);
+        workWithFile.loadPriceList("/priceList.txt",orcalc.priceList);
         orcalc.parse(s);
         Assert.assertEquals(0, orcalc.fillingLines(),0.001);
         orcalc.result();
@@ -176,7 +176,7 @@ public class AppTest {
         OrderCalculate orcalc =new OrderCalculate();
         String[] s =new String[]{"5-2","9-2","12-1","1-6","10-1","card-12"};
         orcalc.valid(s);
-        workWithFile.loadPriceList(new File("d:/temp", "priceList.txt"),orcalc.priceList);
+        workWithFile.loadPriceList("/priceList.txt",orcalc.priceList);
         orcalc.parse(s);
         Assert.assertEquals(620, orcalc.fillingLines(),0.001);
         orcalc.result();

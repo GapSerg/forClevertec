@@ -10,7 +10,7 @@ public class App {
             if (!oneCheck.valid(args)){
                 System.out.println(oneCheck.validMessage);
             } else {
-                workWithFile.loadPriceList(new File("d:/temp", "priceList.txt"),oneCheck.priceList);
+                workWithFile.loadPriceList("/priceList.txt",oneCheck.priceList);
                 oneCheck.parse(args);
                 oneCheck.fillingLines();
                 oneCheck.result();

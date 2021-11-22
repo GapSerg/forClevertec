@@ -3,3 +3,4 @@
 18,IceCream,12,0
 10,Whiskey,200,-
 9,Fish,100,0
+12,Pork,80,10
