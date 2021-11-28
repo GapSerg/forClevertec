@@ -9,12 +9,18 @@ public class App {
     public static void main(String[] args) {
         OrderCalculate oneCheck = new OrderCalculate();
         WorkWithFile workWithFile = new WorkWithFile();
+        workWithFile.storeToLog("\n\n------------next Test ------------------");
+
+
         try {
             //It is verification of initial data
             if (!oneCheck.validate(args)) {
-                System.out.println(oneCheck.validMessage); //1 log
+                System.out.println(oneCheck.validMessage);
+                workWithFile.storeToLog(oneCheck.validMessage);
             } else {
+                workWithFile.storeToLog(oneCheck.validMessage);
                 workWithFile.loadPriceList(oneCheck.PRICE_LIST_RESOURCE_TXT, oneCheck.priceList);
+                WorkWithFile.storeToLog(workWithFile.validFileMessage);
                 oneCheck.linesOfCheck = oneCheck.parse(args);
                 oneCheck.fillingLines();
                 System.out.println(oneCheck.result());
@@ -26,7 +32,7 @@ public class App {
 
 
         } catch (Exception e) {
-            //log stack trace
+            WorkWithFile.storeToLog(e.getMessage());
             System.out.println(e.getMessage());
         }
 

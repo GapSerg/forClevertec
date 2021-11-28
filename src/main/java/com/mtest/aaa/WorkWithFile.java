@@ -9,7 +9,13 @@ import java.util.Map;
 public class WorkWithFile {
 
     public String validFileMessage = "";
-
+    public static void storeToLog(String message){
+        try (BufferedWriter out=new BufferedWriter(new FileWriter("log.txt",true));){
+            out.write(message+"\n");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     public static void checkToFile(String path,String finalCheckToPrint){
         try (BufferedWriter out=new BufferedWriter(new FileWriter(path));){
             out.write(finalCheckToPrint);
@@ -38,7 +44,7 @@ public class WorkWithFile {
 
 
                 } catch (RuntimeException e) {
-                    System.out.println("Not correct data in bonusCardBase line number " + i);
+                    WorkWithFile.storeToLog("Not correct data in bonusCardBase line number " + i);
                     e.printStackTrace();
 
                 }
@@ -46,6 +52,7 @@ public class WorkWithFile {
             }
 
         } catch (Exception e) {
+            WorkWithFile.storeToLog("File for load not found");
             System.out.println("File for load not found");
             e.printStackTrace();
             return null;

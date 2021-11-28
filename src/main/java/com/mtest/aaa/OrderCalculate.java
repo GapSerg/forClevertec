@@ -25,18 +25,21 @@ public class OrderCalculate {
      * also in this method we take information about discount card
      */
     public boolean validate(String[] ops) {
-        int n = ops.length; //choose correct naming
-        if (n == 0) {
-            validMessage = "No data, please correct!"; //log
+        int nPosionInChack = ops.length;
+        StringBuilder initString=new StringBuilder();
+        if (nPosionInChack == 0) {
+            validMessage = "No data, please correct!";
+
             return false;
         }
-        if (ops[n - 1].matches("card.+")) {
+
+        if (ops[nPosionInChack - 1].matches("card.+")) {
             try {
                 isCard = true;
                 String[] buff = new String[2];
-                buff = ops[n - 1].split("-", 2);
+                buff = ops[nPosionInChack - 1].split("-", 2);
                 cardNumber = Integer.parseInt(buff[1]);
-                n = n - 1;
+                nPosionInChack = nPosionInChack - 1;
                 bonus = WorkWithFile.findCard(BONUS_CARD_BASE_RESOURCE_TXT, cardNumber);
                 if (bonus == null) {
                     validMessage = "This card number is not base. You haven't bonus"; //loh
@@ -45,22 +48,26 @@ public class OrderCalculate {
 
             } catch (NumberFormatException e) {
 
-                validMessage = "Not correct card number"; //log
+                validMessage = "Not correct card number";
                 e.printStackTrace();
                 return false;
             }
         }
-        if ((n == 0) & (isCard)) {
+        if ((nPosionInChack == 0) & (isCard)) {
             validMessage = "Data is not correct, you give only card!";
             return false;
 
         }
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < nPosionInChack; i++) {
+            initString.append(ops[i]+" ");
             if (!ops[i].matches("[0-9]+-[0-9]+")) {
+
                 validMessage = "Data is not correct! \nChange product on " + (i + 1) + " position";
                 return false;
             }
         }
+        if (isCard){initString.append(ops[nPosionInChack]);};
+        WorkWithFile.storeToLog(initString.toString());
         validMessage = "Initial data matches necessary form";
         return true;
     }
