@@ -1,12 +1,13 @@
 package com.mtest.aaa;
+import java.util.*;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+/**
+ * This class contain methods with main logic and information which change from inital to answer
+ */
 
 public class OrderCalculate {
+    public static final String BONUS_CARD_BASE_RESOURCE_TXT = "/bonusCardBase.txt";
+    public static final String PRICE_LIST_RESOURCE_TXT="/priceList.txt";
     public String validMessage;
     public Integer cardNumber = null;
     public Boolean isCard = false;
@@ -17,10 +18,16 @@ public class OrderCalculate {
     public float discountCheck = 0;
 
 
-    public boolean valid(String[] ops) {
-        int n = ops.length;
+    /**
+     * Method validates input
+     * @param ops bill params validation (command line args)
+     * @return true if valid
+     * also in this method we take information about discount card
+     */
+    public boolean validate(String[] ops) {
+        int n = ops.length; //choose correct naming
         if (n == 0) {
-            validMessage = "No data, please correct!";
+            validMessage = "No data, please correct!"; //log
             return false;
         }
         if (ops[n - 1].matches("card.+")) {
@@ -30,15 +37,15 @@ public class OrderCalculate {
                 buff = ops[n - 1].split("-", 2);
                 cardNumber = Integer.parseInt(buff[1]);
                 n = n - 1;
-                bonus = WorkWithFile.findCard(new File("d:/temp", "bonusCardBase.txt"), cardNumber);
+                bonus = WorkWithFile.findCard(BONUS_CARD_BASE_RESOURCE_TXT, cardNumber);
                 if (bonus == null) {
-                    validMessage = "This card number is not base. You haven't bonus";
-                    return true;
+                    validMessage = "This card number is not base. You haven't bonus"; //loh
+
                 }
 
             } catch (NumberFormatException e) {
 
-                validMessage = "Not correct card number";
+                validMessage = "Not correct card number"; //log
                 e.printStackTrace();
                 return false;
             }
@@ -58,73 +65,99 @@ public class OrderCalculate {
         return true;
     }
 
-    public int parse(String[] ops) {
+    /**
+     *
+     * @param ops (command line args) parse to id and amount
+     * @return List with start information about product which wil in check
+     */
+    public List<PosInCheck> parse(String[] ops) {
         int n = ops.length;
         if (isCard) {
-            n = n - 1;
+            n--;
         }
-        String[] buff = new String[2];
+        List<PosInCheck> linesOfCheck = new ArrayList<>();
+        String[] buff;
         for (int i = 0; i < n; i++) {
             buff = ops[i].split("-", 2);
             linesOfCheck.add(new PosInCheck(Integer.parseInt(buff[0]), Integer.parseInt(buff[1])));
 
         }
-        return linesOfCheck.size();
+        return linesOfCheck;
     }
 
+    /**
+     * This method calculate lines in check and create total sum for check
+     * @return sum for check, but if id for any product is not in base then
+     * it's information print in check.
+     */
     public float fillingLines() {
-        int n = linesOfCheck.size();
+
         Product tempProduct = new Product();
-        for (int i = 0; i < n; i++) {
-            tempProduct = priceList.get(linesOfCheck.get(i).getId());
+        Iterator<PosInCheck> iter =linesOfCheck.iterator();
+        int i=0;
+        while (iter.hasNext()){
+            tempProduct = priceList.get(iter.next().getId());
             if (tempProduct != null) {
                 linesOfCheck.get(i).name = tempProduct.name;
                 linesOfCheck.get(i).price = tempProduct.price;
                 linesOfCheck.get(i).discountPromoLine = tempProduct.discPromo;
-                if (bonus==null){
-                sumCheck = sumCheck + linesOfCheck.get(i).calculateLine(0);}
-                else  sumCheck = sumCheck + linesOfCheck.get(i).calculateLine(bonus);
+                if (bonus == null) {
+                    sumCheck = sumCheck + linesOfCheck.get(i).calculateLine(0);
+                } else {
+                    sumCheck = sumCheck + linesOfCheck.get(i).calculateLine(bonus);
+                }
                 discountCheck = discountCheck + linesOfCheck.get(i).discount;
             } else
-                linesOfCheck.get(i).bonusLine = "Product with code " + linesOfCheck.get(i).getId() + " is not in price list!";
-
+                linesOfCheck.get(i).bonusLine = "Product with code " + linesOfCheck.get(i).getId() + " is not in price list!\n";
+         i++;
         }
         return sumCheck;
     }
 
+    /**
+     *
+     * @return result check
+     */
     public String result() {
-        boolean flag=true;
-        System.out.println(PosInCheck.headCheck());
-        for (int i = 0; i < linesOfCheck.size(); i++) {
-            if (linesOfCheck.get(i).name!=null) {
-                System.out.printf("%-3d  %-10s  %-3d ", i + 1, linesOfCheck.get(i).name, linesOfCheck.get(i).getAmount());
-                System.out.printf("%7.2f   %9.2f \n", linesOfCheck.get(i).price, linesOfCheck.get(i).sumLine);
+        boolean flagProductInPriceList = true;
+
+        StringBuilder check = new StringBuilder(PosInCheck.headCheck());
+
+        for (int i = 0; i < linesOfCheck.size(); i++) { //use foreach
+            if (linesOfCheck.get(i).name != null) {
+                check.append(String.format("%-3d  %-10s  %-3d %7.2f   %9.2f \n",
+                        i + 1, linesOfCheck.get(i).name, linesOfCheck.get(i).getAmount(),
+                        linesOfCheck.get(i).price, linesOfCheck.get(i).sumLine));
                 if (linesOfCheck.get(i).discount > 0.001) {
-                    System.out.println(linesOfCheck.get(i).bonusLine);
+                    check.append(linesOfCheck.get(i).bonusLine);
 
                 }
-            } else {flag = false; System.out.println(linesOfCheck.get(i).bonusLine);}
+            } else {
+                flagProductInPriceList = false;
+                check.append(linesOfCheck.get(i).bonusLine);
+            }
         }
         if (sumCheck > 0.0001) {
             if (discountCheck > 0.001) {
-                System.out.printf("\nСheck amount                %12.2f", sumCheck);
-                System.out.printf("\nTotal discount              %12.2f", discountCheck);
-                System.out.printf("\nTOTAL PAYABLE               %12.2f", (sumCheck - discountCheck));
+                check.append(String.format("\nСheck amount                %12.2f", sumCheck));
+                check.append(String.format("\nTotal discount              %12.2f", discountCheck));
+                check.append(String.format("\nTOTAL PAYABLE               %12.2f", (sumCheck - discountCheck)));
 
-            } else System.out.printf("\nTOTAL PAYABLE               %12.2f", (sumCheck - discountCheck));
-            if (!flag){
-                   System.out.printf("\nWARRING!!! not all position is calculate ", (sumCheck - discountCheck));}
+            } else check.append(String.format("\nTOTAL PAYABLE               %12.2f", (sumCheck - discountCheck)));
+            if (!flagProductInPriceList) {
+                check.append(String.format("\nWARRING!!! not all position is calculate ", (sumCheck - discountCheck)));
+            }
         } else {
-            System.out.println("Sorry we can't make you check.\n" +
+            check.append("Sorry we can't make you check.\n" +
                     "Any of you products is not in our price list ");
         }
-        if ((isCard)&(bonus==null)){
-            System.out.println("\nWARRING!!! Sorry we can't find you card.\n" +
+        if ((isCard) & (bonus == null)) {
+            check.append("\nWARRING!!! Sorry we can't find you card.\n" +
                     "This card number is not base. You haven't bonus");
         }
 
 
-        return "";
+        return check.toString();
     }
 
 }

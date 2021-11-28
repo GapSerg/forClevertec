@@ -1,5 +1,9 @@
 package com.mtest.aaa;
 
+/**
+ * This class contain information about any product
+ */
+
 public class Product {
     String name;
     float price;
@@ -12,10 +16,8 @@ public class Product {
     }
 
     public Product() {
-
+        this(null, 0, null);
     }
-
-
 
 
 }
